@@ -1,10 +1,9 @@
 {
   "name": "@creately/color-picker",
-  "realname": "ngx-color-picker",
   "description": "Color picker widget for Angular",
   "bugs": "https://github.com/zefoy/ngx-color-picker/issues",
   "license": "MIT",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "main": "./bundles/ngx-color-picker.umd.js",
   "module": "./dist/ngx-color-picker.es5.js",
   "typings": "./dist/ngx-color-picker.d.ts",
@@ -29,7 +28,7 @@
     "build:html": "cpx src/lib/color-picker.component.html dist/lib/",
     "bundle:es5": "rollup -c config/rollup-es5.config.js --silent",
     "bundle:umd": "rollup -c config/rollup-umd.config.js --silent",
-    "minify:umd": "terser bundles/$npm_package_realname.umd.js -o bundles/$npm_package_realname.umd.min.js --source-map=\"filename=bundles/$npm_package_realname.umd.min.js.map\""
+    "minify:umd": "terser bundles/ngx-color-picker.umd.js -o bundles/ngx-color-picker.umd.min.js --source-map=\"filename=bundles/ngx-color-picker.umd.min.js.map\""
   },
   "repository": {
     "type": "git",

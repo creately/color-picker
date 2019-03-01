@@ -4,7 +4,7 @@ import sourcemaps from 'rollup-plugin-sourcemaps';
 
 const pkg = require('../package.json');
 
-const name = pkg.realname.replace(/-([a-z])/g, (g) => {
+const name = 'ngx-color-picker'.replace(/-([a-z])/g, (g) => {
   return g[1].toUpperCase();
 });
 
