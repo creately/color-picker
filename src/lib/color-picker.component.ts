@@ -822,6 +822,9 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
       if (this.cpPosition === 'left') {
         this.top += boxDirective.height * this.cpPositionOffset / 100 - this.dialogArrowOffset;
         this.left -= this.cpWidth + this.dialogArrowSize - 2;
+      } else if (this.cpPosition === 'leftTop') {
+        this.left -= this.cpWidth + this.dialogArrowSize - 2;
+        this.top -= dialogHeight + this.dialogArrowSize;
       } else if (this.cpPosition === 'top') {
         this.arrowTop = dialogHeight - 1;
 
