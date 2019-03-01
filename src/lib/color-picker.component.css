@@ -74,6 +74,14 @@
   border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #777;
 }
 
+.color-picker .arrow.arrow-leftTop {
+  bottom: 5%;
+  left: 100%;
+
+  border-width: 5px 10px;
+  border-color: rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) rgba(0, 0, 0, 0) #777;
+}
+
 .color-picker .arrow.arrow-right {
   top: 8px;
   left: -20px;
