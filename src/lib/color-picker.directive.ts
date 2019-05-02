@@ -181,6 +181,7 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
       if (this.vcRef !== vcRef) {
         this.cmpRef.changeDetectorRef.detectChanges();
       }
+      document.body.appendChild( this.cmpRef.location.nativeElement );
     } else if (this.dialog) {
       this.dialog.openDialog(this.colorPicker);
     }
