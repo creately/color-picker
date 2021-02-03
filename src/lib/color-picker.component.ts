@@ -106,6 +106,8 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
   public cpAddColorButtonClass: string;
   public cpRemoveColorButtonClass: string;
 
+  public cpHideArrow: boolean;
+
   @ViewChild('dialogPopup') dialogElement: ElementRef;
 
   @ViewChild('hueSlider') hueSlider: ElementRef;
@@ -196,7 +198,7 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
     cpOKButton: boolean, cpOKButtonClass: string, cpOKButtonText: string,
     cpCancelButton: boolean, cpCancelButtonClass: string, cpCancelButtonText: string,
     cpAddColorButton: boolean, cpAddColorButtonClass: string, cpAddColorButtonText: string,
-    cpRemoveColorButtonClass: string): void
+    cpRemoveColorButtonClass: string, cpHideArrow: boolean): void
   {
     this.setInitialColor(color);
 
@@ -245,6 +247,8 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.cpAddColorButtonClass = cpAddColorButtonClass;
     this.cpRemoveColorButtonClass = cpRemoveColorButtonClass;
 
+    this.cpHideArrow = cpHideArrow;
+
     if (!cpPositionRelativeToArrow) {
       this.dialogArrowOffset = 0;
     }
@@ -258,6 +262,11 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
         cpAlphaChannel !== 'always' && cpAlphaChannel !== 'forced')
     {
       this.cpAlphaChannel = 'disabled';
+    }
+
+    if (!cpHideArrow) {
+      this.dialogArrowOffset = 0;
+      this.dialogArrowSize = 0;
     }
   }
 
