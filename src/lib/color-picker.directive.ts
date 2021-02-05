@@ -1,23 +1,29 @@
 import { Directive, OnChanges, OnDestroy, Input, Output, EventEmitter,
   HostListener, ApplicationRef, ComponentRef, ElementRef, ViewContainerRef,
-  Injector, ReflectiveInjector, ComponentFactoryResolver } from '@angular/core';
+  Injector, ReflectiveInjector, ComponentFactoryResolver, OnInit } from '@angular/core';
 
 import { ColorPickerService } from './color-picker.service';
 import { ColorPickerComponent } from './color-picker.component';
 
 import { AlphaChannel, ColorMode, OutputFormat } from './helpers';
-
+import { interval, merge, Observable, Subject, Subscription } from 'rxjs';
+import { debounce, distinctUntilChanged, filter, tap } from 'rxjs/operators';
 @Directive({
   selector: '[colorPicker]',
   exportAs: 'ngxColorPicker'
 })
-export class ColorPickerDirective implements OnChanges, OnDestroy {
+export class ColorPickerDirective implements OnInit, OnChanges, OnDestroy {
   private dialog: any;
 
   private dialogCreated: boolean = false;
   private ignoreChanges: boolean = false;
 
   private cmpRef: ComponentRef<ColorPickerComponent>;
+
+  private hostElementHover: Subject<boolean> = new Subject();
+  private colorPickerHover: Subject<boolean> = new Subject();
+
+  private subs: Subscription[];
 
   @Input() colorPicker: string;
 
@@ -69,7 +75,7 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
 
   @Input() cpRemoveColorButtonClass: string = 'cp-remove-color-button-class';
 
-  @Input() cpHideArrow: boolean = false;
+  @Input() cpOpenOnHover: boolean = false;
 
   @Output() cpInputChange = new EventEmitter<any>(true);
 
@@ -100,11 +106,34 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
     this.inputChange(event);
   }
 
+  @HostListener('mouseenter') handleMouseOver(): void {
+    this.hostElementHover.next(true);
+  }
+
+  @HostListener('mouseleave') handleMouseOut(): void {
+    this.hostElementHover.next(false);
+  }
+
   constructor(private injector: Injector, private cfr: ComponentFactoryResolver,
     private appRef: ApplicationRef, private vcRef: ViewContainerRef, private elRef: ElementRef,
-    private _service: ColorPickerService) {}
+    private _service: ColorPickerService,
+  ) {
+    this.subs = [];
+  }
+
+  ngOnInit(): void {
+   this.subs.push(
+     this.listenToHoverEvents().subscribe(),
+   );
+  }
 
   ngOnDestroy(): void {
+    while (this.subs.length > 0) {
+      const sub = this.subs.pop();
+      if (sub) {
+        sub.unsubscribe();
+      }
+    }
     if (this.cmpRef !== undefined) {
       this.cmpRef.destroy();
     }
@@ -142,6 +171,24 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
     }
   }
 
+  private listenToHoverEvents(): Observable<boolean> {
+    return merge(
+      this.hostElementHover,
+      this.colorPickerHover,
+    ).pipe(
+      filter(() => this.cpOpenOnHover),
+      debounce( hover => hover ? interval(0) : interval(250)),
+      distinctUntilChanged(),
+      tap(hover => {
+        if (hover) {
+          this.openDialog();
+        } else {
+          this.closeDialog();
+        }
+      }),
+    );
+  }
+
   public openDialog(): void {
     if (!this.dialogCreated) {
       let vcRef = this.vcRef;
@@ -176,13 +223,19 @@ export class ColorPickerDirective implements OnChanges, OnDestroy {
         this.cpOKButton, this.cpOKButtonClass, this.cpOKButtonText,
         this.cpCancelButton, this.cpCancelButtonClass, this.cpCancelButtonText,
         this.cpAddColorButton, this.cpAddColorButtonClass, this.cpAddColorButtonText,
-        this.cpRemoveColorButtonClass, this.cpHideArrow);
+        this.cpRemoveColorButtonClass);
 
       this.dialog = this.cmpRef.instance;
 
       if (this.vcRef !== vcRef) {
         this.cmpRef.changeDetectorRef.detectChanges();
       }
+
+      this.subs.push(
+        this.cmpRef.instance.colorPickerHover.pipe(
+          tap(hover => this.colorPickerHover.next(hover)),
+        ).subscribe(),
+      );
     } else if (this.dialog) {
       this.dialog.openDialog(this.colorPicker);
     }
