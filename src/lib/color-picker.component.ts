@@ -8,6 +8,8 @@ import { ColorFormats, Hsla, Hsva, Rgba } from './formats';
 import { AlphaChannel, OutputFormat, SliderDimension, SliderPosition } from './helpers';
 
 import { ColorPickerService } from './color-picker.service';
+import { Subject } from 'rxjs';
+import { ColorPickerDirective } from './color-picker.directive';
 
 @Component({
   selector: 'color-picker',
@@ -30,7 +32,7 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
   private listenerResize: any;
   private listenerMouseDown: any;
 
-  private directiveInstance: any;
+  private directiveInstance: ColorPickerDirective;
 
   private sliderH: number;
   private sliderDimMax: SliderDimension;
@@ -106,6 +108,8 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
   public cpAddColorButtonClass: string;
   public cpRemoveColorButtonClass: string;
 
+  public colorPickerHover: Subject<boolean> = new Subject();
+
   @ViewChild('dialogPopup') dialogElement: ElementRef;
 
   @ViewChild('hueSlider') hueSlider: ElementRef;
@@ -121,6 +125,14 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
     if (this.show && this.cpDialogDisplay === 'popup') {
       this.onAcceptColor(event);
     }
+  }
+
+  @HostListener('mouseenter') handleMouseEnter(): void {
+    this.colorPickerHover.next(true);
+  }
+
+  @HostListener('mouseleave') handleMouseLeave(): void {
+    this.colorPickerHover.next(false);
   }
 
   constructor(private elRef: ElementRef, private cdRef: ChangeDetectorRef, private service: ColorPickerService) {}
@@ -186,7 +198,7 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
     this.closeColorPicker();
   }
 
-  public setupDialog(instance: any, elementRef: ElementRef, color: any,
+  public setupDialog(instance: ColorPickerDirective, elementRef: ElementRef, color: any,
     cpWidth: string, cpHeight: string, cpDialogDisplay: string, cpFallbackColor: string,
     cpColorMode: string, cpAlphaChannel: AlphaChannel, cpOutputFormat: OutputFormat,
     cpDisableInput: boolean, cpIgnoredElements: any, cpSaveClickOutside: boolean,
