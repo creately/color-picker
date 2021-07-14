@@ -1,5 +1,5 @@
 {
-  "name": "ngx-color-picker",
+  "name": "@creately/color-picker",
   "description": "Color picker widget for Angular",
   "bugs": "https://github.com/zefoy/ngx-color-picker/issues",
   "version": "11.0.0",
