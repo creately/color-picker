@@ -119,6 +119,7 @@ export class ColorPickerComponent implements OnInit, OnDestroy, AfterViewInit {
   public cpRemoveColorButtonClass: string;
 
   public cpTriggerElement: ElementRef;
+  public colorPickerHover: Subject<boolean> = new Subject();
 
   @ViewChild('dialogPopup', { static: true }) dialogElement: ElementRef;
 

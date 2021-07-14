@@ -1,6 +1,6 @@
 import { Directive, OnChanges, OnDestroy, Input, Output, EventEmitter,
   HostListener, ApplicationRef, ComponentRef, ElementRef, ViewContainerRef,
-  Injector, ReflectiveInjector, ComponentFactoryResolver, EmbeddedViewRef } from '@angular/core';
+  Injector, ReflectiveInjector, ComponentFactoryResolver, EmbeddedViewRef, OnInit } from '@angular/core';
 
 import { ColorPickerService } from './color-picker.service';
 import { ColorPickerComponent } from './color-picker.component';
@@ -57,6 +57,7 @@ export class ColorPickerDirective implements OnInit, OnChanges, OnDestroy {
   @Input() cpPosition: string = 'auto';
   @Input() cpPositionOffset: string = '0%';
   @Input() cpPositionRelativeToArrow: boolean = false;
+  @Input() cpOpenOnHover: boolean = false;
 
   @Input() cpOKButton: boolean = false;
   @Input() cpOKButtonText: string = 'OK';
@@ -133,6 +134,12 @@ export class ColorPickerDirective implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    while (this.subs.length > 0) {
+      const sub = this.subs.pop();
+      if (sub) {
+        sub.unsubscribe();
+      }
+    }
     if (this.cmpRef != null) {
       if (this.viewAttachedToAppRef) {
         this.appRef.detachView(this.cmpRef.hostView);
